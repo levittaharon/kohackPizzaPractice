@@ -32,18 +32,34 @@ for i in labels.keys():
         labels[i].input.configure(borderwidth=2, relief="solid", highlightthickness = 4, highlightcolor="red")
     labels[i].label.configure(bg="black", foreground="white", font=("Arial",12, "bold"))
     labels[i].grid(column=1, sticky=tk.E+tk.W, padx=10, pady=2)
+
+def convert(orderlist):
+    
+    order = list(orderlist.values())
+    
+    #order is a list containing [name,address,phone number, toppings, slices, tracking number] 
+    name = order[0]
+    address =  order[1]
+    phone =  order[2]
+    topping =  order[3]
+    slices =  order[4]
+    tracking = order[5]
+    command = "INSERT INTO orders (name,address,phone,topping,slices,tracking) values ( name, address, phone, topping, slices, tracking);"
+    return(command)
+
+    
 def orderinfo():
     orderinfo = {"Name":labels["Name"].input.get(), "Address":labels["Address"].input.get(), "Phone":labels["Phone"].input.get(), "Topping":labels["Topping"].input.get(), "Slices":labels["Slices"].input.get(), "Tracking Number":labels["Tracking Number"].input.get()}
     confirm = messagebox.askokcancel("Confirm Order", "Are you sure you want to confirm order?")
     if confirm==True:    
         print(orderinfo)
-        return orderinfo
+        return convert(orderinfo)
+
 pizzahut = tk.PhotoImage(file='pizza(2)(1).png')
 label = tk.Label(root, text="PizzaHut", image=pizzahut)
 label.grid(sticky=tk.W + tk.E, column=1)
 
 Order = tk.Button(root, text="Proceed", command=lambda: orderinfo(), background="white", foreground="black", font=("Arial",14, "bold"), borderwidth=10, relief="solid", highlightthickness = 4, highlightcolor="red").grid(column = 1, sticky = tk.W + tk.E)
-
 
 
 
