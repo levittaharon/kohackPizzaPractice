@@ -22,7 +22,46 @@ class host:
         cur.execute("SELECT * FROM orders;")
         return(cur.fetchall)
         cur.close()
-    
+
+    def checkSlices(self):
+        while True:
+            toppings = ['cheese','vegetable','pineapple']
+            #put this into a for loop each in toppings
+            for topping in toppings:
+                con = sqlite3.connect("orders.db")
+                cur = con.cursor()
+                cur.execute("SELECT (slices) VALUES FROM orders WHERE TOPPING IS ?",(topping))
+                slicesList = cur.fetchall()
+                sum = 0
+                for i in slicesList:
+                    sum+=i
+                if sum >= 8:
+                    cur.execute("SELECT (name,slices) VALUES FROM orders WHERE TOPPING IS ?",(topping))
+                    slicesList = cur.fetchall()
+                    sum = 0
+                    slicesListf = []
+                    for i in slicesList:
+                        if sum + i[1] < 8:
+                            #slicesListf is for final and contains names
+                            slicesListf.append(i[0])
+                            sum +=i[1]
+                        elif sum + i[1] == 8:
+                            break
+                    if len(slicesListf) != 0:
+                        order = []
+                        for name in slicesListf:
+                            cur.execute("SELECT * FROM orders WHERE name IS ?",(name))
+                            order.append(cur.fetchall())
+                        #delete values from db
+                        for name in slicesListf:
+                            cur.execute("DELETE FROM orders WHERE name IS ?",(name))
+                            con.commit()
+                return(order)
+
+                
+
+#the noted stuff is assuming that we take into account routes        
+"""    
     def sendRoute(self,ids):
         con = sqlite3.connect("orders.db")
         cur = con.cursor()
@@ -86,6 +125,7 @@ class host:
     #takes in same as mergeGroup function but splits group
     def splitGroup(self,info):
         pass 
+"""        
 
                 
 
