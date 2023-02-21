@@ -44,7 +44,9 @@ def convert(orderlist):
     topping =  order[3]
     slices =  order[4]
     tracking = order[5]
-    command = "INSERT INTO orders (name,address,phone,topping,slices,tracking) values ( name, address, phone, topping, slices, tracking);"
+    
+    command = f"INSERT INTO orders (name,address,phone,topping,slices,tracking) values ( {name}, {address}, {phone}, {topping}, {slices}, {tracking});"
+    
     return(command)
 
     
