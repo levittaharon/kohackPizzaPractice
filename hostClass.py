@@ -1,25 +1,20 @@
 import sqlite3
 from mapClass import mapping
 class host:
-    def __init__(self,orderlist):
-        order = list(orderlist.values())
-        self.order = order
-        #order is a list containing [name,address,phone number, toppings, slices, tracking number] 
-        self.name = self.order[0]
-        self.address = self.order[1]
-        self.phone = self.order[2]
-        self.topping = self.order[3]
-        self.slices = self.order[4]
-        self.tracking = self.order[5]
-    #takes in list values and puts them into db    
+    def __init__(self,command,name):
+        self.command = command
+        self.name = name
+
+    #takes in command from sockets and executes   
 
         con = sqlite3.connect("orders.db")
         cur = con.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS orders(name,address,phone,topping,slices,tracking NOT NULL PRIMARY KEY,route)")
-        cur.execute("INSERT INTO orders (name,address,phone,topping,slices,tracking) values (?,?,?,?,?,?);",(self.name,self.address,self.phone,self.topping,self.slices,self.tracking))
+        cur.execute("CREATE TABLE IF NOT EXISTS orders(name NOT NULL PRIMARY KEY,address,phone,topping,slices,tracking,route)")
+        cur.execute(self.command)
         con.commit()
+
         cur.close()
-        mapping.mapRoute(self.tracking,self.address)
+        mapping.mapRoute(self.name,self.address)
 
     def sendDBToDriver(self):
         con = sqlite3.connect("orders.db")
@@ -42,18 +37,24 @@ class host:
         #this will take the route
         con = sqlite3.connect("orders.db")
         cur = con.cursor()
-        cur.execute("SELECT FROM orders (tracking,slices,route) VALUES WHERE topping IS 'cheese'")
+        cur.execute("SELECT FROM orders (name,slices,route) VALUES WHERE topping IS 'cheese'")
         
         routes=cur.fetchall()
+        
+        #make a list of streets in each route
+        for i in routes:
+            route.append(i[2])
         #check for common roads
         common_routes = {}
+        
         for route in routes:
             #keep track of how many adsresses go through a certain road
-            for i in route:
-                if i in common_routes.keys():
-                    common_routes[i].append([route[0],route[1]]) 
-                else:
-                    common_routes[i] = [[route[0],route[1]]]
+            
+            if i[2] in common_routes.keys():
+                common_routes[i[2]].append([route[0],route[1]]) 
+            else:
+                common_routes[i[2]] = [[route[0],route[1]]]
+            
         
         common_streets = {}
         #check dictionary for most used roads and make groups each group will be a list in common routes
@@ -72,16 +73,16 @@ class host:
                 self.sendRoute()
                 common_streets.pop(index)
             elif total_slices < 8:
-                self.mergeGroups(info)
+                try:
+                    groups.append(info)
+                except:
+                    groups = []
             else:
                 self.splitGroup(info)
             index +=1
     #takes in a list containing ids that go through a road and finds the best group to merge it with
-    def mergeGroups(self,info):
-        try:
-            groups.append(info)
-        except:
-            groups = []
+    def mergeGroups(self,groups):
+        
     #takes in same as mergeGroup function but splits group
     def splitGroup(self,info):
         pass 
