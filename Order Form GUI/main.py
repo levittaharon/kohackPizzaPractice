@@ -53,6 +53,7 @@ def orderinfo():
     confirm = messagebox.askokcancel("Confirm Order", "Are you sure you want to confirm order?")
     if confirm==True:    
         print(orderinfo)
+        print(convert(orderinfo))
         return convert(orderinfo)
 
 pizzahut = tk.PhotoImage(file='pizza(2)(1).png')
